@@ -43,6 +43,9 @@ func (m *Plugin) GenerateCode(data *codegen.Data) error {
 
 	switch data.Config.Resolver.Layout {
 	case config.LayoutSingleFile:
+		if data.Config.Resolver.EnableRewriteForSingleFile {
+			return m.generateSingleFileEnableRewrite(data)
+		}
 		return m.generateSingleFile(data)
 	case config.LayoutFollowSchema:
 		return m.generatePerSchema(data)
@@ -89,6 +92,65 @@ func (m *Plugin) generateSingleFile(data *codegen.Data) error {
 	return templates.Render(templates.Options{
 		PackageName: data.Config.Resolver.Package,
 		FileNotice:  `// THIS CODE IS A STARTING POINT ONLY. IT WILL NOT BE UPDATED WITH SCHEMA CHANGES.`,
+		Filename:    data.Config.Resolver.Filename,
+		Data:        resolverBuild,
+		Packages:    data.Config.Packages,
+		Template:    newResolverTemplate,
+	})
+}
+
+func (m *Plugin) generateSingleFileEnableRewrite(data *codegen.Data) error {
+	file := File{}
+	rewriter, err := rewrite.New(data.Config.Resolver.Dir())
+	if err != nil {
+		return err
+	}
+
+	for _, o := range data.Objects {
+		if o.HasResolvers() {
+			caser := cases.Title(language.English, cases.NoLower)
+			rewriter.MarkStructCopied(templates.LcFirst(o.Name) + templates.UcFirst(data.Config.Resolver.Type))
+			rewriter.GetMethodBody(data.Config.Resolver.Type, caser.String(o.Name))
+
+			file.Objects = append(file.Objects, o)
+		}
+
+		for _, f := range o.Fields {
+			if !f.IsResolver {
+				continue
+			}
+
+			structName := templates.LcFirst(o.Name) + templates.UcFirst(data.Config.Resolver.Type)
+			comment := strings.TrimSpace(strings.TrimLeft(rewriter.GetMethodComment(structName, f.GoFieldName), `\`))
+			implementation := strings.TrimSpace(rewriter.GetMethodBody(structName, f.GoFieldName))
+
+			resolver := Resolver{o, f, rewriter.GetPrevDecl(structName, f.GoFieldName), comment, implementation, nil}
+			file.Resolvers = append(file.Resolvers, &resolver)
+		}
+	}
+
+	if _, err := os.Stat(data.Config.Resolver.Filename); err == nil {
+		file.name = data.Config.Resolver.Filename
+		file.imports = rewriter.ExistingImports(file.name)
+		file.RemainingSource = rewriter.RemainingSource(file.name)
+	}
+
+	resolverBuild := &ResolverBuild{
+		File:                &file,
+		PackageName:         data.Config.Resolver.Package,
+		ResolverType:        data.Config.Resolver.Type,
+		HasRoot:             true,
+		OmitTemplateComment: data.Config.Resolver.OmitTemplateComment,
+	}
+
+	newResolverTemplate := resolverTemplate
+	if data.Config.Resolver.ResolverTemplate != "" {
+		newResolverTemplate = readResolverTemplate(data.Config.Resolver.ResolverTemplate)
+	}
+
+	return templates.Render(templates.Options{
+		PackageName: data.Config.Resolver.Package,
+		FileNotice:  `// THIS CODE WILL BE UPDATED WITH SCHEMA CHANGES. PREVIOUS IMPLEMENTATION FOR SCHEMA CHANGES WILL BE KEPT IN THE COMMENT SECTION. IMPLEMENTATION FOR UNCHANGED SCHEMA WILL BE KEPT.`,
 		Filename:    data.Config.Resolver.Filename,
 		Data:        resolverBuild,
 		Packages:    data.Config.Packages,

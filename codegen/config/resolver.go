@@ -11,14 +11,15 @@ import (
 )
 
 type ResolverConfig struct {
-	Filename            string         `yaml:"filename,omitempty"`
-	FilenameTemplate    string         `yaml:"filename_template,omitempty"`
-	Package             string         `yaml:"package,omitempty"`
-	Type                string         `yaml:"type,omitempty"`
-	Layout              ResolverLayout `yaml:"layout,omitempty"`
-	DirName             string         `yaml:"dir"`
-	OmitTemplateComment bool           `yaml:"omit_template_comment,omitempty"`
-	ResolverTemplate    string         `yaml:"resolver_template,omitempty"`
+	Filename                   string         `yaml:"filename,omitempty"`
+	FilenameTemplate           string         `yaml:"filename_template,omitempty"`
+	Package                    string         `yaml:"package,omitempty"`
+	Type                       string         `yaml:"type,omitempty"`
+	Layout                     ResolverLayout `yaml:"layout,omitempty"`
+	DirName                    string         `yaml:"dir"`
+	OmitTemplateComment        bool           `yaml:"omit_template_comment,omitempty"`
+	ResolverTemplate           string         `yaml:"resolver_template,omitempty"`
+	EnableRewriteForSingleFile bool           `yaml:"enable_rewrite_for_single_file,omitempty"`
 }
 
 type ResolverLayout string
