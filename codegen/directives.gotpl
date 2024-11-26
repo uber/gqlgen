@@ -92,7 +92,7 @@ func _queryMiddleware(ctx context.Context, ec *executionContext, obj *ast.Operat
 {{- else -}}
 func (ec *executionContext) _queryMiddleware(ctx context.Context, obj *ast.OperationDefinition, next func(ctx context.Context) (interface{}, error)) graphql.Marshaler {
 {{- end }}
-	{{ template "queryDirectives" (dict "DirectiveList" .Directives.LocationDirectives "Type" "QUERY" "UseFunctionSyntaxForExecutionContext" $useFunctionSyntaxForExecutionContext) }}
+	{{ template "queryDirectives" (dict "DirectiveList" (.Directives.LocationDirectives "QUERY") "UseFunctionSyntaxForExecutionContext" $useFunctionSyntaxForExecutionContext) }}
 }
 {{ end }}
 
@@ -102,7 +102,7 @@ func _mutationMiddleware(ctx context.Context, ec *executionContext, obj *ast.Ope
 {{- else -}}
 func (ec *executionContext) _mutationMiddleware(ctx context.Context, obj *ast.OperationDefinition, next func(ctx context.Context) (interface{}, error)) graphql.Marshaler {
 {{- end }}
-	{{ template "queryDirectives" (dict "DirectiveList" .Directives.LocationDirectives "Type" "MUTATION" "UseFunctionSyntaxForExecutionContext" $useFunctionSyntaxForExecutionContext) }}
+	{{ template "queryDirectives" (dict "DirectiveList" (.Directives.LocationDirectives "MUTATION") "UseFunctionSyntaxForExecutionContext" $useFunctionSyntaxForExecutionContext) }}
 }
 {{ end }}
 

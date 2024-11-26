@@ -265,7 +265,7 @@
 						return _{{$type.Definition.Name}}(ctx, ec, sel)
 						{{- else -}}
 						return ec._{{$type.Definition.Name}}(ctx, sel)
-						{{ end }}
+						{{- end }}
 					{{- end }}
 				{{- else }}
 					{{ if $useFunctionSyntaxForExecutionContext -}}
