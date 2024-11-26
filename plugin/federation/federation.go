@@ -325,7 +325,8 @@ func (f *Federation) GenerateCode(data *codegen.Data) error {
 		Data: struct {
 			Federation
 			UsePointers bool
-		}{*f, data.Config.ResolversAlwaysReturnPointers},
+			UseFunctionSyntaxForExecutionContext bool
+		}{*f, data.Config.ResolversAlwaysReturnPointers, data.Config.UseFunctionSyntaxForExecutionContext},
 		GeneratedHeader: true,
 		Packages:        data.Config.Packages,
 		Template:        federationTemplate,
