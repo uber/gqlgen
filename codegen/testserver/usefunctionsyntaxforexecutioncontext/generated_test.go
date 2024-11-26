@@ -28,11 +28,11 @@ func TestQuery(t *testing.T) {
 	createdAt := "2021-01-01"
 	resolvers.QueryResolver.GetUser = func(ctx context.Context, id string) (*User, error) {
 		return &User{
-			ID:   id,
-			Name: "test",
-			Email: "testEmail",
-			Age: testAge,
-			Role: "ADMIN",
+			ID:        id,
+			Name:      "test",
+			Email:     "testEmail",
+			Age:       testAge,
+			Role:      "ADMIN",
 			CreatedAt: &createdAt,
 		}, nil
 	}
@@ -40,19 +40,19 @@ func TestQuery(t *testing.T) {
 	resolvers.QueryResolver.ListUsers = func(ctx context.Context, filter *UserFilter) ([]*User, error) {
 		return []*User{
 			{
-				ID:   "1",
-				Name: "test1",
-				Email: "testEmail",
-				Age: testAge,
-				Role: "ADMIN",
+				ID:        "1",
+				Name:      "test1",
+				Email:     "testEmail",
+				Age:       testAge,
+				Role:      "ADMIN",
 				CreatedAt: &createdAt,
 			},
 			{
-				ID:   "2",
-				Name: "test2",
-				Email: "testEmail",
-				Age: testAge,
-				Role: "ADMIN",
+				ID:        "2",
+				Name:      "test2",
+				Email:     "testEmail",
+				Age:       testAge,
+				Role:      "ADMIN",
 				CreatedAt: &createdAt,
 			},
 		}, nil
@@ -92,21 +92,21 @@ func TestQuery(t *testing.T) {
 	t.Run("test query", func(t *testing.T) {
 		var resp struct {
 			GetUser struct {
-				ID        string  `json:"id"`
-				Name      string  `json:"name"`
-				Email     string  `json:"email"`
-				Age       *int    `json:"age"`
-				Role      string  `json:"role"`
-				CreatedAt string  `json:"createdAt"`
+				ID        string `json:"id"`
+				Name      string `json:"name"`
+				Email     string `json:"email"`
+				Age       *int   `json:"age"`
+				Role      string `json:"role"`
+				CreatedAt string `json:"createdAt"`
 			} `json:"getUser"`
 
 			ListUsers []struct {
-				ID        string  `json:"id"`
-				Name      string  `json:"name"`
-				Email     string  `json:"email"`
-				Age       *int    `json:"age"`
-				Role      string  `json:"role"`
-				CreatedAt string  `json:"createdAt"`
+				ID        string `json:"id"`
+				Name      string `json:"name"`
+				Email     string `json:"email"`
+				Age       *int   `json:"age"`
+				Role      string `json:"role"`
+				CreatedAt string `json:"createdAt"`
 			} `json:"listUsers"`
 		}
 		c.MustPost(`query TestQuery {
@@ -136,7 +136,6 @@ func TestQuery(t *testing.T) {
 		require.JSONEq(t, expectedJsonResp, string(jsonResp))
 	})
 }
-
 
 func TestMutation(t *testing.T) {
 	resolvers := &Stub{}
@@ -296,4 +295,3 @@ func TestSubscription(t *testing.T) {
 		require.JSONEq(t, expectedJsonResp, string(jsonResp))
 	})
 }
-
